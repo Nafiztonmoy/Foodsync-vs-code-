@@ -7,7 +7,7 @@ using System.Web.Mvc;
 
 namespace FoodWeb.Controllers
 {
-    public class InformationController : Controller
+    public class InformationController : Controller 
     {
         AppFoodDbContext db = new AppFoodDbContext();
         // GET: Information
