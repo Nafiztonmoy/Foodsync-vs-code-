@@ -16,6 +16,8 @@ namespace FoodWeb.Controllers
             var adminInCookie = Request.Cookies["AdminInfo"];
             if(adminInCookie != null)
             {
+                ViewBag.UserCount = db.SignupLogin.Count();      
+                ViewBag.OrderCount = db.orders.Count();
                 return View();
             }
             else
@@ -142,5 +144,19 @@ namespace FoodWeb.Controllers
                 }
             }
         }
+        public ActionResult UserList()
+        {
+            var adminInCookie = Request.Cookies["AdminInfo"];
+            if (adminInCookie != null)
+            {
+                var users = db.SignupLogin.ToList();
+                return View(users);
+            }
+            else
+            {
+                return RedirectToAction("LoginAdmin");
+            }
+        }
+
     }
 }

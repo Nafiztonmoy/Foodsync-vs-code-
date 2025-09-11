@@ -54,6 +54,7 @@ namespace FoodWeb.Controllers
                 {
                     db.SignupLogin.Add(signup);
                     db.SaveChanges();
+                    TempData["Success"] = "Registration successful!";
                     return RedirectToAction("Index", "Products");
                 }
             }
@@ -115,7 +116,8 @@ namespace FoodWeb.Controllers
             Session.Clear();
             return RedirectToAction("Login");
         }
-      
+         // GET: UserProfile
+        
 
     }
 }
