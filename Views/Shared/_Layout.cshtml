@@ -193,9 +193,9 @@
                             </div>
                         </div>
                         <div class="col-xl-7 col-lg-6">
-                            <form class="header-search" action="#" method="post">
+                            <form class="header-search" action="@Url.Action("Search", "Products")" method="get">
                                 <div class="header-search__content pos-relative">
-                                    <input type="search" name="header-search" placeholder="Search our store" required>
+                                    <input type="search" name="q" placeholder="Search our store" required />
                                     <button class="pos-absolute" type="submit"><i class="icon-search"></i></button>
                                 </div>
                             </form>
@@ -264,12 +264,13 @@
 
             <div class="offcanvas-inner">
 
-                <form class="header-search m-tb-15" action="#" method="post">
+                <form class="header-search" action="@Url.Action("Search", "Products")" method="get">
                     <div class="header-search__content pos-relative">
-                        <input type="search" name="header-search" placeholder="Search our store" required>
+                        <input type="search" name="q" placeholder="Search our store" required />
                         <button class="pos-absolute" type="submit"><i class="icon-search"></i></button>
                     </div>
                 </form>
+
                 <!-- Start Mobile User Action -->
                 <ul class="header__user-action-icon m-tb-15 text-center">
                     <!-- Start Header Wishlist Box -->
