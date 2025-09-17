@@ -1,4 +1,4 @@
-﻿using FoodWeb.Models;
+﻿﻿using FoodWeb.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,8 +58,29 @@ namespace FoodWeb.Controllers
         }
         public ActionResult Blogs()
         {
-
-            return View();
+            var blogs = db.blogModels.OrderByDescending(b => b.BlogDate).ToList();
+            return View(blogs);
+        }
+        public ActionResult ReviewList()
+        {
+            var adminInCookie = Request.Cookies["AdminInfo"];
+            if (adminInCookie != null)
+            {
+                var reviews = db.Reviews.OrderByDescending(r => r.CreatedAt).ToList();
+                return View(reviews);
+            }
+            else
+            {
+                var userInCookie = Request.Cookies["UserInfo"];
+                if (userInCookie != null)
+                {
+                    return RedirectToAction("Index", "Products");
+                }
+                else
+                {
+                    return RedirectToAction("LoginAdmin", "Admin");
+                }
+            }
         }
 
     }
