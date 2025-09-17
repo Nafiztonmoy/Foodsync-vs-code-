@@ -30,6 +30,12 @@ namespace FoodWeb.Models
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "Password not Matched")]
         public string ConfirmPassword { get; set; }
+        [StringLength(250)]
+        public string Address { get; set; }
+
+        [StringLength(20)]
+        [Phone]
+        public string PhoneNo { get; set; }
 
     }
 }
