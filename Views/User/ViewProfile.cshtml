@@ -1,0 +1,62 @@
+@model FoodWeb.Models.SignupLogin
+
+@{
+    ViewBag.Title = "My Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-dark text-white text-center">
+                    <h3>My Profile</h3>
+                </div>
+                <div class="card-body p-4">
+                    <dl class="row">
+                        <dt class="col-sm-4">Full Name</dt>
+                        <dd class="col-sm-8">@Model.Name</dd>
+
+                        <dt class="col-sm-4">Email</dt>
+                        <dd class="col-sm-8">@Model.Email</dd>
+
+                        <dt class="col-sm-4">Address</dt>
+                        <dd class="col-sm-8">@Model.Address</dd>
+
+                        <dt class="col-sm-4">Phone Number</dt>
+                        <dd class="col-sm-8">@Model.PhoneNo</dd>
+                    </dl>
+
+                    <div class="text-center mt-4">
+                        <a href="@Url.Action("EditProfile", "User", new { id = Model.userid })" class="btn btn--box btn--medium btn-primary btn-lg">
+                            Edit Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body.dark-mode .card {
+        background-color: #2c2c2c !important;
+        color: #f1f1f1 !important;
+        border: 1px solid #555 !important;
+    }
+
+    body.dark-mode .card-header {
+        background-color: #444 !important;
+        color: #ffd580 !important;
+    }
+
+    body.dark-mode .btn-primary {
+        background-color: #4466cc !important;
+        border: 1px solid #555 !important;
+    }
+
+        body.dark-mode .btn-primary:hover {
+            background-color: #3355aa !important;
+            color: #ffd580 !important;
+        }
+</style>
