@@ -1,0 +1,138 @@
+@model FoodWeb.Models.BlogModel
+@{
+    ViewBag.Title = "Edit Blog";
+    Layout = "~/Views/Shared/_LayoutAdminPage.cshtml";
+}
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <h1>
+            <i class="fa fa-edit"></i> Edit Blog Post
+            <small>Update your blog content</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="@Url.Action("Index", "Admin")"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+            <li><a href="@Url.Action("BlogList", "Admin")"><i class="fa fa-edit"></i> Blog Management</a></li>
+            <li class="active"><i class="fa fa-edit"></i> Edit Blog</li>
+        </ol>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="box box-warning">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"><i class="fa fa-edit"></i> Edit Blog Post Details</h3>
+                        <div class="box-tools pull-right">
+                            <span class="label label-warning">Editing Mode</span>
+                        </div>
+                    </div>
+                    @using (Html.BeginForm("EditBlog", "Admin", FormMethod.Post, new { @class = "form-horizontal", @id = "editBlogForm" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(model => model.BlogId)
+                        @Html.HiddenFor(model => model.BlogDate)
+                        
+                        <div class="box-body">
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger alert alert-danger" })
+                            
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"><i class="fa fa-file-text-o"></i> Blog Title *</label>
+                                <div class="col-sm-9">
+                                    @Html.TextBoxFor(model => model.BlogTitle, new { 
+                                        @class = "form-control", 
+                                        @maxlength = "200",
+                                        @required = "required"
+                                    })
+                                    @Html.ValidationMessageFor(model => model.BlogTitle, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"><i class="fa fa-user"></i> Author Name *</label>
+                                <div class="col-sm-9">
+                                    @Html.TextBoxFor(model => model.BlogAutherName, new { 
+                                        @class = "form-control",
+                                        @required = "required"
+                                    })
+                                    @Html.ValidationMessageFor(model => model.BlogAutherName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"><i class="fa fa-align-left"></i> Blog Content *</label>
+                                <div class="col-sm-9">
+                                    @Html.TextAreaFor(model => model.BlogDescription, new { 
+                                        @class = "form-control", 
+                                        @rows = "12",
+                                        @id = "blogContent",
+                                        @required = "required"
+                                    })
+                                    @Html.ValidationMessageFor(model => model.BlogDescription, "", new { @class = "text-danger" })
+                                    <span class="help-block"><small>Last updated: @Model.BlogDate?.ToString("MMMM dd, yyyy 'at' hh:mm tt")</small></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-footer">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <a href="@Url.Action("BlogList", "Admin")" class="btn btn-default">
+                                        <i class="fa fa-arrow-left"></i> Back to List
+                                    </a>
+                                </div>
+                                <div class="col-sm-6 text-right">
+                                    <button type="submit" class="btn btn-warning">
+                                        <i class="fa fa-save"></i> Update Blog Post
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"><i class="fa fa-info-circle"></i> Blog Information</h3>
+                    </div>
+                    <div class="box-body">
+                        <table class="table table-bordered">
+                            <tr>
+                                <td><strong>Blog ID:</strong></td>
+                                <td>#@Model.BlogId</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Created Date:</strong></td>
+                                <td>@Model.BlogDate?.ToString("MMM dd, yyyy")</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Author:</strong></td>
+                                <td>@Model.BlogAutherName</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="box box-success">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"><i class="fa fa-bolt"></i> Quick Actions</h3>
+                    </div>
+                    <div class="box-body">
+                        <a href="/Information/Blogs" target="_blank" class="btn btn-info btn-block">
+                            <i class="fa fa-external-link"></i> View on Website
+                        </a>
+                        <a href="@Url.Action("BlogList", "Admin")" class="btn btn-primary btn-block" style="margin-top: 10px;">
+                            <i class="fa fa-list"></i> All Blogs
+                        </a>
+                        <a href="@Url.Action("DeleteBlog", "Admin", new { id = Model.BlogId })" 
+                           class="btn btn-danger btn-block" style="margin-top: 10px;"
+                           onclick="return confirm('Are you sure you want to delete this blog post?')">
+                            <i class="fa fa-trash"></i> Delete Blog
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
