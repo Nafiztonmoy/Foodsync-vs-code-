@@ -1,0 +1,43 @@
+@model IEnumerable<FoodWeb.Models.Wishlist>
+@{
+    ViewBag.Title = "My Wishlist";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if (TempData["Success"] != null)
+{
+    <div id="successMessage" class="alert alert-success" style="position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:9999; width:50%; text-align:center; font-size:16px;">
+        @TempData["Success"]
+    </div>
+}
+<h2>My Wishlist</h2>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Image</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Action</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td><img src="~/@item.Product.ProductPicture" width="80" /></td>
+            <td>@item.Product.ProductName</td>
+            <td>@item.Product.ProductPrice TK</td>
+            <td>
+                <a href="@Url.Action("MoveToCart","Products", new { id = item.Id })"
+                   class="btn btn-success">Move to Cart</a>
+            </td>
+        </tr>
+    }
+
+</table>
+<script>
+  
+    setTimeout(function () {
+        var msg = document.getElementById("successMessage");
+        if (msg) {
+            msg.style.display = "none";
+        }
+    }, 2000); 
+</script>

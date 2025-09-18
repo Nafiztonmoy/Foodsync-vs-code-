@@ -1,0 +1,104 @@
+﻿@{
+    ViewBag.Title = "About Us";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<main id="main-container" class="main-container">
+
+    <!-- ::::::  Start About Top Section  ::::::  -->
+    <div class="about-top py-5">
+        <div class="container">
+            <div class="row align-items-center">
+
+                <!-- Left: Image -->
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <div class="about-img text-center">
+                        <img src="~/Content/assets/img/FoodSync .jpg"
+                             alt="About FoodWeb"
+                             class="img-fluid rounded shadow" />
+                    </div>
+                </div>
+
+                <!-- Right: Content -->
+                <div class="col-md-6">
+                    <div class="about-content">
+                        <h2 class="font--regular mb-3">About FoodWeb</h2>
+                        <p class="para__text">
+                            Welcome to <strong>FoodWeb</strong>, your trusted online food shopping and delivery platform.
+                            We connect you with the best local restaurants, grocery stores, and food suppliers to ensure
+                            fresh, delicious meals delivered straight to your door.
+                        </p>
+                        <p class="para__text">
+                            Our mission is to make food ordering <em>fast, reliable, and affordable</em> while supporting
+                            local businesses. With secure payment options, real-time order tracking, and excellent
+                            customer support, FoodWeb makes every meal a delightful experience.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- ::::::  End About Top Section  ::::::  -->
+    <!-- ::::::  Start Map Section  ::::::  -->
+    <div class="map-section my-5">
+        <div class="container">
+            <h3 class="text-center mb-4">Find Nearby Restaurants</h3>
+            <div class="map-container border rounded shadow-sm" style="height: 400px;">
+                <!-- Google Map Embed -->
+                <iframe src="https://www.google.com/maps/embed/v1/search?key=AIzaSyALd2dePU0NSoOxE6ekZzaiiXd2GvPUsLE&q=restaurants+near+me"
+                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
+                </iframe>
+            </div>
+        </div>
+    </div>
+    <!-- ::::::  End Map Section  ::::::  -->
+    <!-- ::::::  Start CMS Section  ::::::  -->
+    <div class="cms my-5">
+        <div class="container">
+            <div class="row text-center">
+
+                <!-- Free Shipping -->
+                <div class="col-lg-4 col-md-6 col-12 mb-4">
+                    <div class="cms__content p-4 border rounded shadow-sm h-100">
+                        <div class="cms__icon mb-3">
+                            <i class="fas fa-truck fa-2x text-warning"></i>
+                        </div>
+                        <div class="cms__text">
+                            <h6 class="cms__title">Free Shipping</h6>
+                            <p class="para__text">Get free delivery on all orders above 250 TK.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 100% Money Back -->
+                <div class="col-lg-4 col-md-6 col-12 mb-4">
+                    <div class="cms__content p-4 border rounded shadow-sm h-100">
+                        <div class="cms__icon mb-3">
+                            <i class="far fa-money-bill-alt fa-2x text-success"></i>
+                        </div>
+                        <div class="cms__text">
+                            <h6 class="cms__title">Money Back Guarantee</h6>
+                            <p class="para__text">Not satisfied? Get a 100% refund within 7 days.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Online Support -->
+                <div class="col-lg-4 col-md-6 col-12 mb-4">
+                    <div class="cms__content p-4 border rounded shadow-sm h-100">
+                        <div class="cms__icon mb-3">
+                            <i class="far fa-life-ring fa-2x text-primary"></i>
+                        </div>
+                        <div class="cms__text">
+                            <h6 class="cms__title">Online Support 24/7</h6>
+                            <p class="para__text">Our team is available day and night to assist you.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- ::::::  End CMS Section  ::::::  -->
+
+</main>
