@@ -1,9 +1,10 @@
-using FoodWeb.Models;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+
 
 namespace FoodWeb.Controllers
 {
@@ -116,65 +117,3 @@ namespace FoodWeb.Controllers
             Session.Clear();
             return RedirectToAction("Login");
         }
-        // GET: UserProfile
-        public ActionResult EditProfile()
-        {
-            // Get logged-in user ID from session or cookie
-            int userId = Convert.ToInt32(Session["uid"]);
-            var user = db.SignupLogin.Find(userId);
-            if (user == null) return HttpNotFound();
-
-            return View(user);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult EditProfile(SignupLogin model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            var user = db.SignupLogin.Find(model.userid);
-            if (user == null) return HttpNotFound();
-
-            // Update fields
-            user.Name = model.Name;
-            user.Address = model.Address;
-            user.PhoneNo = model.PhoneNo;
-
-            if (!string.IsNullOrWhiteSpace(model.Password))
-            {
-                user.Password = model.Password; // ⚠️ should hash in real apps
-                user.ConfirmPassword = model.ConfirmPassword;
-            }
-
-            db.SaveChanges();
-            TempData["Success"] = "Profile updated successfully!";
-
-            return RedirectToAction("Index", "Products"); // or a profile page
-        }
-
-        [HttpGet]
-        public ActionResult ViewProfile()
-        {
-            if (Session["uid"] == null)
-            {
-                return RedirectToAction("Login");
-            }
-
-            int userId = Convert.ToInt32(Session["uid"]);
-            var user = db.SignupLogin.FirstOrDefault(u => u.userid == userId);
-
-            if (user == null)
-            {
-                return HttpNotFound();
-            }
-
-            return View(user);
-        }
-
-
-    }
-}
