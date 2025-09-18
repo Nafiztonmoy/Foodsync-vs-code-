@@ -1,0 +1,39 @@
+@model IEnumerable<FoodWeb.Models.Products>
+@{
+    ViewBag.Title = "Search Results";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<main id="main-container" class="main-container">
+    <div class="container my-5">
+        <h2 class="mb-4">Search Results for: "@Request["q"]"</h2>
+
+        @if (!Model.Any())
+        {
+            <p>No products found matching your search.</p>
+        }
+        else
+        {
+            <div class="row">
+                @foreach (var item in Model)
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 shadow-sm">
+                            <img src="@Url.Content("~/" + item.ProductPicture)"
+
+                                 class="card-img-top"
+                                 alt="@item.ProductName"
+                                 style="height:200px; object-fit:cover;" />
+                            <div class="card-body">
+                                <h5 class="card-title">@item.ProductName</h5>
+                                <p><strong>Price:</strong> @item.ProductPrice TK</p>
+                                <a href="@Url.Action("addToCart","Products", new { id = item.id })"
+                                   class="btn btn--box btn--medium btn--radius btn--black btn--black-hover-green btn--uppercase font--semi-bold">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</main>
