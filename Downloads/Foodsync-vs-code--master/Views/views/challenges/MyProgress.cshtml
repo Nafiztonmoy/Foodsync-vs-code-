@@ -1,0 +1,149 @@
+﻿@model IEnumerable<FoodWeb.Models.UserChallenge>
+@{
+    ViewBag.Title = "My Challenge Progress";
+}
+
+<div class="container mt-4">
+    <h2>My Challenge Progress</h2>
+    <p>Track your progress across all challenges you've joined.</p>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            You haven't joined any challenges yet.
+            <a href="@Url.Action("Index")">Browse challenges</a> to get started!
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var userChallenge in Model)
+            {
+                var challenge = userChallenge.Challenge;
+                var progressPercent = (userChallenge.CurrentProgress / (double)challenge.RequiredQuantity * 100);
+
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">@challenge.Title</h5>
+                            <span class="badge @(userChallenge.IsCompleted ? "bg-success" : "bg-warning")">
+                                @(userChallenge.IsCompleted ? "Completed" : "In Progress")
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">@challenge.Description</p>
+
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <span>Progress:</span>
+                                    <span>@userChallenge.CurrentProgress / @challenge.RequiredQuantity</span>
+                                </div>
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar @(userChallenge.IsCompleted ? "bg-success" : "")"
+                                         role="progressbar"
+                                         style="width: @progressPercent%;"
+                                         aria-valuenow="@progressPercent"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100">
+                                        @Math.Round(progressPercent)%
+                                    </div>
+                                </div>
+                            </div>
+
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <strong>Product:</strong> @challenge.RequiredProduct
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Reward:</strong> @challenge.RewardPoints points
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Joined:</strong> @userChallenge.JoinedAt.ToString("MMM dd, yyyy")
+                                </li>
+                                @if (userChallenge.IsCompleted)
+                                {
+                                    <li class="list-group-item">
+                                        <strong>Completed:</strong> @userChallenge.CompletedAt.Value.ToString("MMM dd, yyyy")
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="list-group-item">
+                                        <strong>Time remaining:</strong>
+                                        @{
+                                            var timeRemaining = challenge.EndDate - DateTime.Now;
+                                            if (timeRemaining.TotalDays > 1)
+                                            {
+                                                <text>@timeRemaining.Days days</text>
+                                            }
+                                            else if (timeRemaining.TotalHours > 1)
+                                            {
+                                                <text>@timeRemaining.Hours hours</text>
+                                            }
+                                            else
+                                            {
+                                                <text>Less than 1 hour</text>
+                                            }
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                        <div class="card-footer">
+                            <a href="@Url.Action("Details", new { id = challenge.Id })"
+                               class="btn btn-primary btn-sm">
+                                View Details
+                            </a>
+
+                            @if (!userChallenge.IsCompleted)
+                            {
+                                <a href="@Url.Action("Search", "Products", new { q = challenge.RequiredProduct })"
+                                   class="btn btn-success btn-sm">
+                                    Buy @challenge.RequiredProduct
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="mt-4">
+            <h4>Progress Summary</h4>
+            <div class="row text-center">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">@Model.Count()</h5>
+                            <p class="card-text">Total Challenges</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-success">@Model.Count(uc => uc.IsCompleted)</h5>
+                            <p class="card-text">Completed</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-warning">@Model.Count(uc => !uc.IsCompleted)</h5>
+                            <p class="card-text">In Progress</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">@Model.Sum(uc => uc.Challenge.RewardPoints)</h5>
+                            <p class="card-text">Total Points</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

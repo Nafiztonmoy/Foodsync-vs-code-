@@ -1,0 +1,98 @@
+﻿@model IEnumerable<FoodWeb.Models.Challenge>
+@{
+    ViewBag.Title = "Challenges";
+    var userChallenges = ViewBag.UserChallenges as List<FoodWeb.Models.UserChallenge> ?? new List<FoodWeb.Models.UserChallenge>();
+}
+
+<div class="container mt-4">
+    <h2>Available Challenges</h2>
+    <p>Join challenges to earn reward points and achievements!</p>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <div class="row">
+        @foreach (var challenge in Model)
+        {
+            var userChallenge = userChallenges.FirstOrDefault(uc => uc.ChallengeId == challenge.Id);
+            var isJoined = userChallenge != null;
+            var progressPercent = isJoined ? (userChallenge.CurrentProgress / (double)challenge.RequiredQuantity * 100) : 0;
+
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="card-title">@challenge.Title</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">@challenge.Description</p>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <strong>Target:</strong> Buy @challenge.RequiredQuantity x @challenge.RequiredProduct
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Reward:</strong> @challenge.RewardPoints points
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Ends:</strong> @challenge.EndDate.ToString("MMM dd, yyyy")
+                            </li>
+                        </ul>
+
+                        @if (isJoined)
+                        {
+                            <div class="mt-3">
+                                <div class="progress mb-2">
+                                    <div class="progress-bar" role="progressbar"
+                                         style="width: @progressPercent%;"
+                                         aria-valuenow="@progressPercent"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100">
+                                        @Math.Round(progressPercent)% Complete
+                                    </div>
+                                </div>
+                                <p class="small">
+                                    Progress: @userChallenge.CurrentProgress / @challenge.RequiredQuantity
+                                </p>
+                                @if (userChallenge.IsCompleted)
+                                {
+                                    <span class="badge bg-success">Completed!</span>
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("Details", new { id = challenge.Id })"
+                                       class="btn btn-primary btn-sm">View Progress</a>
+                                }
+                            </div>
+                        }
+                    </div>
+                    <div class="card-footer">
+                        @if (!isJoined)
+                        {
+                            using (Html.BeginForm("Join", "Challenges", new { id = challenge.Id }, FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-success">Join Challenge</button>
+                            }
+                        }
+                        else
+                        {
+                            <small class="text-muted">Joined on @userChallenge.JoinedAt.ToString("MMM dd, yyyy")</small>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            There are no active challenges at the moment. Check back later!
+        </div>
+    }
+</div>

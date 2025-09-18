@@ -1,0 +1,46 @@
+@model FoodWeb.Models.Products
+
+@{
+    ViewBag.Title = "Product Details";
+    Layout = "~/Views/Shared/_LayoutAdminPage.cshtml";
+}
+
+<div class="content-wrapper">
+    <!-- Page header -->
+    <section class="content-header">
+        <h1>Product Details</h1>
+        <ol class="breadcrumb">
+            <li><a href="@Url.Action("Index", "Admin")"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="@Url.Action("ViewProductsAdmin", "Products")">Products</a></li>
+            <li class="active">Details</li>
+        </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">@Model.ProductName</h3>
+            </div>
+
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Name:</strong> @Model.ProductName</p>
+                        <p><strong>Price:</strong> @Model.ProductPrice TK</p>
+                        <p><strong>ID:</strong> @Model.id</p>
+                    </div>
+                    <div class="col-md-6">
+                        <img src="~/@Model.ProductPicture" class="img-responsive img-thumbnail" style="max-width:300px;" alt="@Model.ProductName" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-footer">
+                @Html.ActionLink("Back to List", "ViewProductsAdmin", null, new { @class = "btn btn-default" })
+                @Html.ActionLink("Edit", "EditProduct", new { id = Model.id }, new { @class = "btn btn-success" })
+                @Html.ActionLink("Delete", "Delete", new { id = Model.id }, new { @class = "btn btn-danger" })
+            </div>
+        </div>
+    </section>
+</div>

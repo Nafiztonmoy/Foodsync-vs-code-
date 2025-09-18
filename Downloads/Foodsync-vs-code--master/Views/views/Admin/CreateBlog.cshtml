@@ -1,0 +1,183 @@
+@model FoodWeb.Models.BlogModel
+@{
+    ViewBag.Title = "Create New Blog";
+    Layout = "~/Views/Shared/_LayoutAdminPage.cshtml";
+}
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <h1>
+            <i class="fa fa-plus"></i> Create New Blog Post
+            <small>Share your content with readers</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="@Url.Action("Index", "Admin")"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+            <li><a href="@Url.Action("BlogList", "Admin")"><i class="fa fa-edit"></i> Blog Management</a></li>
+            <li class="active"><i class="fa fa-plus"></i> Create Blog</li>
+        </ol>
+    </section>
+
+    <section class="content">
+        <!-- Success/Error Messages -->
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <h4><i class="icon fa fa-check"></i> Success!</h4>
+                @TempData["Success"]
+            </div>
+        }
+        
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <h4><i class="icon fa fa-ban"></i> Error!</h4>
+                @TempData["Error"]
+                @if (TempData["ErrorDetails"] != null)
+                {
+                    <br><small><strong>Details:</strong> @TempData["ErrorDetails"]</small>
+                }
+            </div>
+        }
+        
+        @if (TempData["ModelStateErrors"] != null)
+        {
+            <div class="alert alert-warning alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <h4><i class="icon fa fa-warning"></i> Validation Errors!</h4>
+                @TempData["ModelStateErrors"]
+            </div>
+        }
+        
+        <div class="row">
+            <div class="col-md-8">
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"><i class="fa fa-edit"></i> Blog Post Details</h3>
+                    </div>
+                    @using (Html.BeginForm("CreateBlog", "Admin", FormMethod.Post, new { @class = "form-horizontal", @id = "blogForm" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="box-body">
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger alert alert-danger" })
+                            
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"><i class="fa fa-file-text-o"></i> Blog Title *</label>
+                                <div class="col-sm-9">
+                                    @Html.TextBoxFor(model => model.BlogTitle, new { 
+                                        @class = "form-control", 
+                                        @placeholder = "Enter blog title...", 
+                                        @maxlength = "200",
+                                        @required = "required"
+                                    })
+                                    @Html.ValidationMessageFor(model => model.BlogTitle, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"><i class="fa fa-user"></i> Author Name *</label>
+                                <div class="col-sm-9">
+                                    @Html.TextBoxFor(model => model.BlogAutherName, new { 
+                                        @class = "form-control", 
+                                        @placeholder = "Enter author name...",
+                                        @value = "FoodSync Team",
+                                        @required = "required"
+                                    })
+                                    @Html.ValidationMessageFor(model => model.BlogAutherName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"><i class="fa fa-align-left"></i> Blog Content *</label>
+                                <div class="col-sm-9">
+                                    @Html.TextAreaFor(model => model.BlogDescription, new { 
+                                        @class = "form-control", 
+                                        @rows = "12", 
+                                        @placeholder = "Write your blog content here...",
+                                        @id = "blogContent",
+                                        @required = "required"
+                                    })
+                                    @Html.ValidationMessageFor(model => model.BlogDescription, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-footer">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <a href="@Url.Action("BlogList", "Admin")" class="btn btn-default">
+                                        <i class="fa fa-arrow-left"></i> Back to List
+                                    </a>
+                                </div>
+                                <div class="col-sm-6 text-right">
+                                    <button type="submit" class="btn btn-primary" onclick="return validateForm();">
+                                        <i class="fa fa-save"></i> Create Blog Post
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"><i class="fa fa-lightbulb-o"></i> Quick Tips</h3>
+                    </div>
+                    <div class="box-body">
+                        <ul class="list-unstyled">
+                            <li><i class="fa fa-check text-green"></i> Write engaging headlines</li>
+                            <li><i class="fa fa-check text-green"></i> Include food-related content</li>
+                            <li><i class="fa fa-check text-green"></i> Keep paragraphs short</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="box box-success">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"><i class="fa fa-magic"></i> Quick Actions</h3>
+                    </div>
+                    <div class="box-body">
+                        <a href="@Url.Action("AddSampleBlogs", "Admin")" class="btn btn-success btn-block">
+                            <i class="fa fa-plus"></i> Add Sample Content
+                        </a>
+                        <a href="@Url.Action("BlogList", "Admin")" class="btn btn-info btn-block" style="margin-top: 10px;">
+                            <i class="fa fa-list"></i> View All Blogs
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+function validateForm() {
+    var title = document.querySelector('input[name="BlogTitle"]').value.trim();
+    var author = document.querySelector('input[name="BlogAutherName"]').value.trim();
+    var description = document.querySelector('textarea[name="BlogDescription"]').value.trim();
+    
+    if (!title) {
+        alert('Please enter a blog title.');
+        return false;
+    }
+    
+    if (!author) {
+        alert('Please enter an author name.');
+        return false;
+    }
+    
+    if (!description) {
+        alert('Please enter blog content.');
+        return false;
+    }
+    
+    if (description.length < 50) {
+        alert('Blog content should be at least 50 characters long.');
+        return false;
+    }
+    
+    return true;
+}
+</script>

@@ -1,0 +1,73 @@
+﻿@model FoodWeb.Models.SignupLogin
+
+@{
+    ViewBag.Title = "Signup";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<main id="main-container" class="main-container">
+    <div class="row">
+        <!-- Left side: Info box -->
+        <div class="col-lg-6 col-12">
+            <div class="contact-info-wrap">
+                <h3>Register Yourself</h3>
+                <p>Create your FoodWeb account to explore more features and order your favorite meals easily.</p>
+            </div>
+        </div>
+
+        <!-- Right side: Signup form -->
+        <div class="col-lg-6 col-12">
+            <div class="contact-form" style="background-color: #f6b88c;">
+                <h3 class="mb-4">Register</h3>
+
+                @using (Html.BeginForm("Signup", "User", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="text-danger">@ViewBag.Message</div>
+
+                    <div class="form-group mb-3">
+                        @Html.LabelFor(model => model.Name)
+                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", placeholder = "Enter Name" } })
+                        @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group mb-3">
+                        @Html.LabelFor(model => model.Email)
+                        @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", placeholder = "Enter Email" } })
+                        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group mb-3">
+                        @Html.LabelFor(model => model.Password)
+                        <div class="password__toggle">
+                            @Html.PasswordFor(model => model.Password, new { @class = "form-control", placeholder = "Enter Password", @id = "form-register-password" })
+                            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                            <span data-toggle="#form-register-password" class="password__toggle--btn fa fa-fw fa-eye"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        @Html.LabelFor(model => model.ConfirmPassword)
+                        <div class="password__toggle">
+                            @Html.PasswordFor(model => model.ConfirmPassword, new { @class = "form-control", placeholder = "Confirm Password", @id = "form-register-confirm-password" })
+                            @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
+                            <span data-toggle="#form-register-confirm-password" class="password__toggle--btn fa fa-fw fa-eye"></span>
+                        </div>
+                    </div>
+
+                    <button class="btn btn--box btn--medium btn--radius btn--black btn--black-hover-green btn--uppercase font--semi-bold w-100" type="submit">
+                        Register
+                    </button>
+                }
+
+                <p class="mt-3">
+                    Already have an account?
+                    <a href="@Url.Action("Login","User")">Login here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</main>
+

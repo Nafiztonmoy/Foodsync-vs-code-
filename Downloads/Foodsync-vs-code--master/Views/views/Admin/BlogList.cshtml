@@ -1,0 +1,201 @@
+@model List<FoodWeb.Models.BlogModel>
+@{
+    ViewBag.Title = "Blog Management";
+    Layout = "~/Views/Shared/_LayoutAdminPage.cshtml";
+}
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <h1>
+            <i class="fa fa-edit"></i> Blog Management
+            <small>Manage and publish your blog posts</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="@Url.Action("Index", "Admin")"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+            <li class="active"><i class="fa fa-edit"></i> Blog Management</li>
+        </ol>
+    </section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <h4><i class="icon fa fa-check"></i> Success!</h4>
+                    @TempData["Success"]
+                </div>
+            }
+            @if (TempData["Info"] != null)
+            {
+                <div class="alert alert-info alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <h4><i class="icon fa fa-info"></i> Information!</h4>
+                    @TempData["Info"]
+                </div>
+            }
+            
+            <!-- Blog Statistics -->
+            <div class="row">
+                <div class="col-lg-3 col-xs-6">
+                    <div class="small-box bg-aqua">
+                        <div class="inner">
+                            <h3>@(Model?.Count ?? 0)</h3>
+                            <p>Total Blog Posts</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fa fa-edit"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-xs-6">
+                    <div class="small-box bg-green">
+                        <div class="inner">
+                            <h3>@(Model?.Count(b => b.BlogDate.Date == DateTime.Today) ?? 0)</h3>
+                            <p>Published Today</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-xs-6">
+                    <div class="small-box bg-yellow">
+                        <div class="inner">
+                            <h3>@(Model?.Count(b => b.BlogDate.Date >= DateTime.Today.AddDays(-7)) ?? 0)</h3>
+                            <p>This Week</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fa fa-clock-o"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-xs-6">
+                    <div class="small-box bg-red">
+                        <div class="inner">
+                            <h3>@(Model?.Count(b => b.BlogDate.Date >= DateTime.Today.AddDays(-30)) ?? 0)</h3>
+                            <p>This Month</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fa fa-bar-chart"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-bolt"></i> Quick Actions</h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <a href="@Url.Action("CreateBlog", "Admin")" class="btn btn-primary btn-block">
+                                <i class="fa fa-plus"></i> Create New Blog Post
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="@Url.Action("AddSampleBlogs", "Admin")" class="btn btn-success btn-block">
+                                <i class="fa fa-magic"></i> Add Sample Content
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="/Information/Blogs" target="_blank" class="btn btn-info btn-block">
+                                <i class="fa fa-external-link"></i> View Public Blog
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Blog Posts Table -->
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-list"></i> All Blog Posts (@(Model?.Count ?? 0) posts)</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    @if (Model != null && Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="blogTable">
+                                <thead>
+                                    <tr>
+                                        <th><i class="fa fa-hashtag"></i> ID</th>
+                                        <th><i class="fa fa-file-text-o"></i> Title</th>
+                                        <th><i class="fa fa-user"></i> Author</th>
+                                        <th><i class="fa fa-calendar"></i> Date</th>
+                                        <th><i class="fa fa-align-left"></i> Content Preview</th>
+                                        <th><i class="fa fa-cogs"></i> Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var blog in Model.OrderByDescending(b => b.BlogDate))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="label label-primary">#@blog.BlogId</span>
+                                            </td>
+                                            <td>
+                                                <strong>@blog.BlogTitle</strong>
+                                                @if (blog.BlogDate.Date == DateTime.Today)
+                                                {
+                                                    <span class="label label-success">NEW</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <i class="fa fa-user text-muted"></i> @blog.BlogAutherName
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">@blog.BlogDate.ToString("MMM dd, yyyy hh:mm tt")</small>
+                                            </td>
+                                            <td style="max-width: 300px;">
+                                                <small class="text-muted">@(blog.BlogDescription?.Length > 100 ? blog.BlogDescription.Substring(0, 100) + "..." : blog.BlogDescription)</small>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <a href="@Url.Action("EditBlog", "Admin", new { id = blog.BlogId })" 
+                                                       class="btn btn-warning btn-sm" title="Edit Blog">
+                                                        <i class="fa fa-edit"></i>
+                                                    </a>
+                                                    <a href="/Information/Blogs" target="_blank" 
+                                                       class="btn btn-info btn-sm" title="View on Website">
+                                                        <i class="fa fa-external-link"></i>
+                                                    </a>
+                                                    <a href="@Url.Action("DeleteBlog", "Admin", new { id = blog.BlogId })" 
+                                                       class="btn btn-danger btn-sm" title="Delete Blog"
+                                                       onclick="return confirm('Are you sure you want to delete this blog post? This action cannot be undone.')">
+                                                        <i class="fa fa-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="callout callout-info">
+                            <h4><i class="fa fa-info"></i> No Blog Posts Found!</h4>
+                            <p>You haven't created any blog posts yet. Get started by creating your first post or adding some sample content.</p>
+                            <a href="@Url.Action("CreateBlog", "Admin")" class="btn btn-primary">
+                                <i class="fa fa-plus"></i> Create Your First Blog Post
+                            </a>
+                            <a href="@Url.Action("AddSampleBlogs", "Admin")" class="btn btn-success">
+                                <i class="fa fa-magic"></i> Add Sample Content
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

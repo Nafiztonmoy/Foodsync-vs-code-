@@ -1,0 +1,178 @@
+﻿@model FoodWeb.Models.Products
+
+@{
+    ViewBag.Title = "Checkout";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* Hide native radio input */
+    .form-check-input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    /* Position label and create outer circle */
+    .form-check {
+        position: relative;
+        padding-left: 30px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        font-size: 16px;
+        user-select: none;
+    }
+
+    .form-check-label::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 2px;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #333;
+        border-radius: 50%;
+        background: white;
+    }
+
+    /* Inner dot for checked radio */
+    .form-check-input:checked + .form-check-label::after {
+        content: "";
+        position: absolute;
+        left: 6px;
+        top: 8px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #007bff;
+    }
+
+    .form-check-label {
+        cursor: pointer;
+    }
+</style>
+
+@if (TempData["cart"] != null)
+{
+    <main id="main-container" class="main-container">
+        <div class="container">
+            <div class="row">
+                <!-- Cart Items -->
+                <div class="col-lg-8 col-md-7">
+                    <div class="cart-form gray-bg m-t-40">
+                        <div class="section-content">
+                            <h5 class="section-content__title">Your Cart Items</h5>
+                        </div>
+
+                        <div class="table-content table-responsive cart-table-content m-t-30">
+                            <table class="table">
+                                <thead class="gray-bg">
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Product Name</th>
+                                        <th>Unit Price</th>
+                                        <th>Qty</th>
+                                        <th>Subtotal</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in TempData["cart"] as List<FoodWeb.Models.Cart>)
+                                    {
+                                        <tr>
+                                            <td class="product-thumbnail">
+                                                <img class="img-fluid" src="~/@item.productPic" alt="">
+                                            </td>
+                                            <td class="product-name">@item.productName</td>
+                                            <td class="product-price-cart">@item.price TK</td>
+                                            <td class="product-quantities">@item.qty</td>
+                                            <td class="product-subtotal">@item.bill TK</td>
+                                            <td class="product-remove">
+                                                <a href="@Url.Action("Remove", "Products", new { id = item.productId })" class="text-danger">
+                                                    <i class="fa fa-times"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Total Calculation -->
+                        <h3 style="float:right; margin-top:20px; margin-right:30px;">
+                            Total: @TempData["total"] TK
+                        </h3>
+                    </div>
+                </div>
+
+                <!-- Payment Options -->
+                <div class="col-lg-4 col-md-5">
+                    <div class="checkout-form gray-bg m-t-40">
+                        <div class="section-content">
+                            <h5 class="section-content__title">Select Payment Method</h5>
+                        </div>
+
+                        @using (Html.BeginForm("PlaceOrder", "Products", FormMethod.Post, new { @class = "checkout-form" }))
+                        {
+                            <h4>Select Payment Method</h4>
+
+                            <!-- Bkash -->
+                            <div class="form-check m-b-10">
+                                <input class="form-check-input" type="radio" name="paymentMethod" value="Bkash" id="bkash" checked />
+                                <label class="form-check-label" for="bkash">Bkash (10 TK cashback)</label>
+                            </div>
+
+                            <!-- Cash on Delivery -->
+                            <div class="form-check m-b-10">
+                                <input class="form-check-input" type="radio" name="paymentMethod" value="CashOnDelivery" id="cod" />
+                                <label class="form-check-label" for="cod">Cash on Delivery</label>
+                            </div>
+
+                            <!-- Inside/Outside Dhaka selection -->
+                            <div id="cod-options" style="margin-left: 25px; margin-top: 8px; display: none;">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="deliveryArea" value="InsideDhaka" id="inside" />
+                                    <label class="form-check-label" for="inside">Inside Dhaka (+70 TK)</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="deliveryArea" value="OutsideDhaka" id="outside" />
+                                    <label class="form-check-label" for="outside">Outside Dhaka (+120 TK)</label>
+                                </div>
+                            </div>
+
+                            <br />
+                            <input type="submit"class="btn btn--box btn--medium btn--radius btn--black btn--black-hover-green btn--uppercase font--semi-bold"
+                                   value="Confirm Order" />
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+}
+else
+{
+    <main id="main-container" class="main-container">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center m-t-40">
+                    <h1 class="text-danger">Cart is Empty</h1>
+                </div>
+            </div>
+        </div>
+    </main>
+}
+
+<script>
+    document.querySelectorAll('input[name="paymentMethod"]').forEach(function (radio) {
+        radio.addEventListener("change", function () {
+            var codOptions = document.getElementById("cod-options");
+            if (this.value === "CashOnDelivery") {
+                codOptions.style.display = "block";
+            } else {
+                codOptions.style.display = "none";
+            }
+        });
+    });
+</script>
