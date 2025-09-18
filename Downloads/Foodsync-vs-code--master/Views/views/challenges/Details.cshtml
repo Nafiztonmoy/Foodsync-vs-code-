@@ -1,0 +1,161 @@
+﻿@model FoodWeb.Models.Challenge
+@{
+    ViewBag.Title = "Challenge Details";
+    var userChallenge = ViewBag.UserChallenge as FoodWeb.Models.UserChallenge;
+    var isJoined = userChallenge != null;
+    var progressPercent = isJoined ? (userChallenge.CurrentProgress / (double)Model.RequiredQuantity * 100) : 0;
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <h2>@Model.Title</h2>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+            }
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <p class="card-text">@Model.Description</p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <strong>Target Product:</strong> @Model.RequiredProduct
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Required Quantity:</strong> @Model.RequiredQuantity
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Reward Points:</strong> @Model.RewardPoints
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Start Date:</strong> @Model.StartDate.ToString("MMM dd, yyyy")
+                        </li>
+                        <li class="list-group-item">
+                            <strong>End Date:</strong> @Model.EndDate.ToString("MMM dd, yyyy")
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            @if (isJoined)
+            {
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Your Progress</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="progress mb-3" style="height: 30px;">
+                            <div class="progress-bar progress-bar-striped
+                                 @(userChallenge.IsCompleted ? "bg-success" : "")"
+                                 role="progressbar"
+                                 style="width: @progressPercent%;"
+                                 aria-valuenow="@progressPercent"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                                @Math.Round(progressPercent)% Complete
+                            </div>
+                        </div>
+                        <p class="text-center">
+                            <strong>@userChallenge.CurrentProgress / @Model.RequiredQuantity</strong>
+                            @Model.RequiredProduct purchased
+                        </p>
+
+                        @if (userChallenge.IsCompleted)
+                        {
+                            <div class="alert alert-success">
+                                <h5>Congratulations! 🎉</h5>
+                                <p>You completed this challenge on @userChallenge.CompletedAt.Value.ToString("MMM dd, yyyy")</p>
+                                <p>You earned @Model.RewardPoints reward points!</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="mt-4">
+                                <h5>Quick Buy</h5>
+                                <p>Purchase @Model.RequiredProduct directly to complete this challenge faster!</p>
+
+                                @using (Html.BeginForm("QuickBuy", "Challenges", FormMethod.Post))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="ChallengeId" value="@Model.Id" />
+
+                                    <div class="input-group mb-3">
+                                        <input type="number" name="Quantity" class="form-control"
+                                               value="1" min="1" max="@(Model.RequiredQuantity - userChallenge.CurrentProgress)"
+                                               required />
+                                        <button type="submit" class="btn btn-primary">
+                                            Buy @Model.RequiredProduct
+                                        </button>
+                                    </div>
+                                    <small class="text-muted">
+                                        You need @(Model.RequiredQuantity - userChallenge.CurrentProgress) more to complete this challenge.
+                                    </small>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Challenge Actions</h4>
+                </div>
+                <div class="card-body">
+                    @if (!isJoined)
+                    {
+                        using (Html.BeginForm("Join", "Challenges", new { id = Model.Id }, FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success btn-lg w-100 mb-3">
+                                Join Challenge
+                            </button>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center">
+                            <p class="text-success">
+                                <i class="fas fa-check-circle"></i> You've joined this challenge
+                            </p>
+                            <p>
+                                <small>Joined on: @userChallenge.JoinedAt.ToString("MMM dd, yyyy")</small>
+                            </p>
+                        </div>
+                    }
+
+                    <a href="@Url.Action("Index")" class="btn btn-outline-secondary w-100 mb-2">
+                        Back to Challenges
+                    </a>
+                    <a href="@Url.Action("MyProgress")" class="btn btn-outline-primary w-100">
+                        View My Progress
+                    </a>
+                </div>
+            </div>
+
+            @if (isJoined && !userChallenge.IsCompleted)
+            {
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5>Shop for @Model.RequiredProduct</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Find products to complete your challenge:</p>
+                        <a href="@Url.Action("Search", "Products", new { q = Model.RequiredProduct })"
+                           class="btn btn-outline-success w-100">
+                            Search for @Model.RequiredProduct
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

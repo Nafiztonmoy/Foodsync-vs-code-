@@ -1,0 +1,191 @@
+﻿@model IEnumerable<FoodWeb.Controllers.AchievementStatusViewModel>
+@{
+    ViewBag.Title = "My Achievements";
+    var unlockedCount = Model.Count(a => a.UserAchievement != null && a.UserAchievement.IsUnlocked);
+    var totalCount = Model.Count();
+    var totalPoints = Model.Where(a => a.UserAchievement != null && a.UserAchievement.IsUnlocked)
+                          .Sum(a => a.Achievement.RewardPoints);
+}
+
+<div class="container mt-4">
+    <h2>My Achievements</h2>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <h3>@unlockedCount / @totalCount</h3>
+                            <p class="text-muted">Achievements Unlocked</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h3>@totalPoints</h3>
+                            <p class="text-muted">Total Points Earned</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h3>@Math.Round((double)unlockedCount / totalCount * 100)%</h3>
+                            <p class="text-muted">Completion Rate</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs" id="achievementTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab">
+                All Achievements (@totalCount)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="unlocked-tab" data-bs-toggle="tab" data-bs-target="#unlocked" type="button" role="tab">
+                Unlocked (@unlockedCount)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="locked-tab" data-bs-toggle="tab" data-bs-target="#locked" type="button" role="tab">
+                Locked (@(totalCount - unlockedCount))
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-3" id="achievementTabsContent">
+        <div class="tab-pane fade show active" id="all" role="tabpanel">
+            <div class="row">
+                @foreach (var item in Model)
+                {
+                    @RenderAchievementCard(item)
+                }
+            </div>
+        </div>
+        <div class="tab-pane fade" id="unlocked" role="tabpanel">
+            <div class="row">
+                @foreach (var item in Model.Where(a => a.UserAchievement != null && a.UserAchievement.IsUnlocked))
+                {
+                    @RenderAchievementCard(item)
+                }
+            </div>
+        </div>
+        <div class="tab-pane fade" id="locked" role="tabpanel">
+            <div class="row">
+                @foreach (var item in Model.Where(a => a.UserAchievement == null || !a.UserAchievement.IsUnlocked))
+                {
+                    @RenderAchievementCard(item)
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@helper RenderAchievementCard(FoodWeb.Controllers.AchievementStatusViewModel item)
+{
+    var achievement = item.Achievement;
+    var userAchievement = item.UserAchievement;
+    var isUnlocked = userAchievement != null && userAchievement.IsUnlocked;
+
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 achievement-card @(isUnlocked ? "unlocked" : "locked")">
+            <div class="card-header">
+                <h5 class="card-title">
+                    @if (isUnlocked)
+                    {
+                        <i class="fas fa-trophy text-warning"></i>
+                    }
+                    else
+                    {
+                        <i class="fas fa-lock"></i>
+                    }
+                    @achievement.Title
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    @if (!string.IsNullOrEmpty(achievement.BadgeIcon))
+                    {
+                        <i class="@achievement.BadgeIcon fa-3x @(isUnlocked ? "text-warning" : "text-muted")"></i>
+                    }
+                    else
+                    {
+                        <i class="fas fa-trophy fa-3x @(isUnlocked ? "text-warning" : "text-muted")"></i>
+                    }
+                </div>
+
+                <p class="card-text">@achievement.Description</p>
+
+                <div class="achievement-progress">
+                    @if (isUnlocked)
+                    {
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i> Unlocked on
+                            @userAchievement.UnlockedAt.Value.ToString("MMM dd, yyyy")
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="progress mb-2">
+                            <div class="progress-bar" role="progressbar"
+                                 style="width: @item.ProgressPercentage%;"
+                                 aria-valuenow="@item.ProgressPercentage"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                                @Math.Round(item.ProgressPercentage)%
+                            </div>
+                        </div>
+                        <p class="small text-center">
+                            @GetRequirementText(achievement, userAchievement?.Progress ?? 0)
+                        </p>
+                    }
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="badge bg-primary">@achievement.RewardPoints points</span>
+
+                @if (isUnlocked)
+                {
+                    <span class="badge bg-success float-end">Unlocked</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary float-end">Locked</span>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@functions {
+    public string GetRequirementText(FoodWeb.Models.Achievement achievement, int progress)
+    {
+        switch (achievement.AchievementType)
+        {
+            case "PURCHASE":
+                var productText = string.IsNullOrEmpty(achievement.RequiredProduct) ? "items" : achievement.RequiredProduct;
+                return $"{progress} / {achievement.RequiredQuantity} {productText} purchased";
+            case "SPENDING_AMOUNT":
+                return $"${progress} / ${achievement.RequiredAmount} spent";
+            case "CHALLENGE_COMPLETION":
+                return $"{progress} / {achievement.RequiredChallenges} challenges completed";
+            case "CHALLENGE_JOIN":
+                return $"{progress} / {achievement.RequiredQuantity} challenges joined";
+            default:
+                return "Unknown requirement";
+        }
+    }
+}
+
+<style>
+    .achievement-card.unlocked {
+        border-left: 4px solid #28a745;
+    }
+
+    .achievement-card.locked {
+        opacity: 0.8;
+        border-left: 4px solid #6c757d;
+    }
+
+    .achievement-card .progress {
+        height: 10px;
+    }
+</style>
